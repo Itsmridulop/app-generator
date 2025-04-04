@@ -2,7 +2,8 @@ import express, { Request, Response, NextFunction } from "express";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import mongoSanitize from "express-mongo-sanitize";
-// import morgan from "morgan";
+import morgan from "morgan";
+import userRouter from "./routers/user.router";
 import cors from "cors";
 import AppError from "./utils/appError";
 import globalErrorHandler from "./controllers/error.controller";
@@ -67,7 +68,7 @@ app.use(
   }),
 );
 app.use(cors());
-// app.use(morgan("dev"));
+app.use(morgan("dev"));
 
 const limiter = rateLimit({
   max: 100,
@@ -83,12 +84,14 @@ app.use(express.json({ limit: "5kb" }));
 // data sanitization against NoSQL query injection
 app.use(mongoSanitize());
 
+app.use("/api/v1/users", userRouter);
+
 app.get("/", (req: Request, res: Response, next: NextFunction) => {
   res.status(200).send("This is working fine");
 });
 
 app.use((req: Request, res: Response, next: NextFunction) => {
-  req.requestTime = new Date().toISOString();
+  // req.requestTime = new Date().toISOString();
   next();
 });
 

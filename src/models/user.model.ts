@@ -1,5 +1,6 @@
-import { Schema, Model, model } from "mongoose";
+import { Schema, Model, model, Query } from "mongoose";
 import { UserType } from "../../types/types";
+
 import bcrypt from "bcryptjs";
 
 const UserSchema: Schema = new Schema(
@@ -28,6 +29,14 @@ const UserSchema: Schema = new Schema(
   },
   { timestamps: true },
 );
+
+UserSchema.pre(/^find/, function (this: Query<any, any>,next) {
+  this.populate({
+    path: "projects",
+    select: "-__v -createdAt -updatedAt",
+  });
+  next();
+});
 
 UserSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();

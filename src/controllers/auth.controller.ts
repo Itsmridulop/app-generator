@@ -1,8 +1,8 @@
-import User from "../models/user.model";
-import { UserType } from "../../types/types";
 import { NextFunction, Request, Response } from "express";
-import jwt from "jsonwebtoken";
 import { catchAsync } from "../utils/catchAsync";
+
+import User from "../models/user.model";
+import jwt from "jsonwebtoken";
 import AppError from "../utils/appError";
 
 const signToken = (id: string) => {

@@ -1,4 +1,6 @@
 import express, { Request, Response, NextFunction } from "express";
+import { UserType } from "../types/types";
+
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import mongoSanitize from "express-mongo-sanitize";
@@ -7,16 +9,17 @@ import userRouter from "./routers/user.router";
 import cors from "cors";
 import AppError from "./utils/appError";
 import globalErrorHandler from "./controllers/error.controller";
+import projectRouter from "./routers/project.router";
 
-// declare global {
-//   namespace Express {
-//     interface Request {
-//       requestTime?: string;
-//       user?: UserType;
-//       file?: Express.Multer.File;
-//     }
-//   }
-// }
+declare global {
+  namespace Express {
+    interface Request {
+      requestTime?: string;
+      user?: UserType;
+      // file?: Express.Multer.File;
+    }
+  }
+}
 
 const app = express();
 app.use(
@@ -85,6 +88,8 @@ app.use(express.json({ limit: "5kb" }));
 app.use(mongoSanitize());
 
 app.use("/api/v1/users", userRouter);
+app.use("/api/v1/projects", projectRouter);
+
 
 app.get("/", (req: Request, res: Response, next: NextFunction) => {
   res.status(200).send("This is working fine");

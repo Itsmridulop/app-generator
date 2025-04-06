@@ -10,6 +10,8 @@ import cors from "cors";
 import AppError from "./utils/appError";
 import globalErrorHandler from "./controllers/error.controller";
 import projectRouter from "./routers/project.router";
+import componentRouter from "./routers/component.router";
+import apiRouter from "./routers/APIRouter";
 
 declare global {
   namespace Express {
@@ -89,14 +91,15 @@ app.use(mongoSanitize());
 
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/projects", projectRouter);
-
+app.use("/api/v1/components", componentRouter);
+app.use("/api/v1/apis", apiRouter);
 
 app.get("/", (req: Request, res: Response, next: NextFunction) => {
   res.status(200).send("This is working fine");
 });
 
 app.use((req: Request, res: Response, next: NextFunction) => {
-  // req.requestTime = new Date().toISOString();
+  req.requestTime = new Date().toISOString();
   next();
 });
 

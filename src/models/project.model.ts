@@ -1,5 +1,4 @@
-import { Schema, Model, model } from "mongoose";
-import { ProjectType } from "../../types/types";
+import { Schema,InferSchemaType, Model, model } from "mongoose";
 
 const ProjectSchema: Schema = new Schema(
   {
@@ -49,8 +48,12 @@ const ProjectSchema: Schema = new Schema(
   { timestamps: true },
 );
 
+type ProjectType = InferSchemaType<typeof ProjectSchema>;
+
 const Project: Model<ProjectType> = model<ProjectType>(
   "Project",
   ProjectSchema,
 );
+
+export type { ProjectType };
 export default Project;

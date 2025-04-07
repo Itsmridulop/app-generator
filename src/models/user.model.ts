@@ -26,6 +26,9 @@ const UserSchema: Schema = new Schema(
         ref: "Project",
       },
     ],
+    passwordChangedAt: {
+      type: Date,
+    },
   },
   { timestamps: true },
 );
@@ -49,6 +52,18 @@ UserSchema.methods.correctPassword = async function (
   userPassword: string,
 ): Promise<boolean> {
   return await bcrypt.compare(candidatePassword, userPassword);
+};
+
+UserSchema.methods.changedPasswordAfter = function (
+  JWTTimestamp: number,
+): boolean {
+  if (this.passwordChangedAt) {
+    const changedTimestamp = Math.floor(
+      this.passwordChangedAt.getTime() / 1000,
+    );
+    return JWTTimestamp < changedTimestamp;
+  }
+  return false;
 };
 
 const User: Model<UserType> = model<UserType>("User", UserSchema);

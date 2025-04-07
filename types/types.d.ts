@@ -9,6 +9,7 @@ interface UserType extends Document {
     candidatePassword: string,
     userPassword: string,
   ): Promise<boolean>;
+  changedPasswordAfter(JWTTimestamp: number): boolean;
 }
 
 export { UserType, ProjectType, ComponentType };

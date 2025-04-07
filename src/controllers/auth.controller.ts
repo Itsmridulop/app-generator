@@ -23,6 +23,25 @@ export const signup = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+export const protect = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    let token: string | undefined;
+    if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) token = req.headers.authorization.split(" ")[1];
+    if (!token) return next(new AppError("please log in to get access", 401));
+    const secret = String(process.env.SECRET) || "";
+    interface DecodedToken {
+      id: string;
+      iat: number;
+    }
+    const decoded = jwt.verify(token, secret) as DecodedToken;
+    const currentUser = await User.findById(decoded.id);
+    if (!currentUser) return next(new AppError("the user belonging to this token does no longer exist", 401));
+    if (currentUser.changedPasswordAfter(decoded.iat)) return next(new AppError("user recently changed password, please log in again", 401));
+    req.user = currentUser;
+    next();
+  }
+)
+
 export const login = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { password, email } = req.body;
